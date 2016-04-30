@@ -1,19 +1,16 @@
 package com.refactula.photomosaic.dataset;
 
-import com.refactula.photomosaic.image.Image;
-
-import java.util.Iterator;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public interface ImageDataset {
 
-    Iterator<Image> iterator(int fromIndex);
+    InputStream openInputStream(int fromIndex) throws IOException;
 
-    default Stream<Image> stream(int fromIndex) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator(fromIndex), Spliterator.ORDERED), false);
+    default DataInputStream openDataInputStream(int fromIndex) throws IOException {
+        return new DataInputStream(new BufferedInputStream(openInputStream(fromIndex)));
     }
 
 }
