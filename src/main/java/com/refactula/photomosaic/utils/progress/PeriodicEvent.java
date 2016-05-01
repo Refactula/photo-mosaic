@@ -1,4 +1,4 @@
-package com.refactula.photomosaic.utils.time;
+package com.refactula.photomosaic.utils.progress;
 
 import java.util.concurrent.TimeUnit;
 
