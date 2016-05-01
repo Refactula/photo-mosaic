@@ -5,8 +5,14 @@ import com.refactula.photomosaic.dataset.ImageDataset;
 import com.refactula.photomosaic.dataset.InMemoryDataset;
 import com.refactula.photomosaic.image.*;
 import com.refactula.photomosaic.index.AverageColorIndex;
+import com.refactula.photomosaic.utils.progress.TimeMeter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static com.refactula.photomosaic.image.ColorChannel.*;
 
 public class DevelopmentApp {
 
@@ -16,7 +22,10 @@ public class DevelopmentApp {
 
     public static void main(String[] args) throws Exception {
         ImageDataset dataset = loadDataset();
-        AverageColorIndex index = AverageColorIndex.readFromFile("index.bin", dataset.size());
+
+        AverageColorIndex index = new AverageColorIndex(20, 1000);
+        index.readFromFile("index.bin", dataset.size());
+
         AwtImage userImage = AwtImage.readFromResource("image.jpg");
 
         int cropWidth = userImage.getWidth() % TILE_WIDTH;
@@ -28,30 +37,39 @@ public class DevelopmentApp {
                 userImage.getHeight() - cropHeight
         ).convert(ArrayImage::new);
 
+        TimeMeter timeMeter = TimeMeter.start();
+
         int horizontalTiles = result.getWidth() / TILE_WIDTH;
         int verticalTiles = result.getHeight() / TILE_HEIGHT;
         AverageColor averageColor = new AverageColor();
+
         for (int tx = 0; tx < horizontalTiles; tx++) {
             for (int ty = 0; ty < verticalTiles; ty++) {
                 Image tileCanvas = result.crop(tx * TILE_WIDTH, ty * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
                 averageColor.compute(tileCanvas);
 
-                int minDistance = Integer.MAX_VALUE;
-                int minTile = -1;
-                for (int i = 0; i < index.size(); i++) {
-                    int distance = 0;
-                    for (ColorChannel channel : ColorChannel.values()) {
-                        distance += Math.abs(averageColor.get(channel) - index.get(i, channel));
-                    }
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        minTile = i;
+                List<Integer> candidates = index.search(averageColor.get(RED), averageColor.get(GREEN), averageColor.get(BLUE));
+                if (candidates.isEmpty()) {
+                    throw new RuntimeException("No candidates");
+                }
+
+                Image bestTile = null;
+                int bestDistance = Integer.MAX_VALUE;
+                for (Integer candidateIndex : candidates) {
+                    Image candidate = dataset.get(candidateIndex);
+                    int distance = tileCanvas.distance(candidate);
+                    if (distance < bestDistance) {
+                        bestDistance = distance;
+                        bestTile = candidate;
                     }
                 }
 
-                tileCanvas.copyPixels(dataset.get(minTile));
+                tileCanvas.copyPixels(bestTile);
             }
         }
+
+        timeMeter.stop();
+        System.out.println("Finished in " + TimeUnit.MILLISECONDS.toSeconds(timeMeter.get()) + "s");
 
         result.convert(AwtImage::new).display();
     }
