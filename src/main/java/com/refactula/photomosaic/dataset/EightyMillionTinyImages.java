@@ -2,10 +2,12 @@ package com.refactula.photomosaic.dataset;
 
 import com.refactula.photomosaic.image.ArrayImage;
 import com.refactula.photomosaic.image.ColorChannel;
-import com.refactula.photomosaic.image.Image;
 import com.refactula.photomosaic.utils.IOUtils;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.IOException;
 
 public class EightyMillionTinyImages extends StreamImageDataset {
 
@@ -18,8 +20,6 @@ public class EightyMillionTinyImages extends StreamImageDataset {
 
     private static final int IMAGE_SIZE_BYTES = ColorChannel.values().length * IMAGE_WIDTH * IMAGE_HEIGHT;
 
-    private final ArrayImage buffer = new ArrayImage(IMAGE_WIDTH, IMAGE_HEIGHT);
-
     private DataInputStream input = null;
 
     @Override
@@ -31,13 +31,8 @@ public class EightyMillionTinyImages extends StreamImageDataset {
     }
 
     @Override
-    protected Image next() throws IOException {
-        try {
-            buffer.readFrom(input);
-            return buffer;
-        } catch (EOFException e) {
-            return null;
-        }
+    protected void readTo(ArrayImage destination) throws IOException {
+        destination.readFrom(input);
     }
 
     @Override
@@ -46,6 +41,16 @@ public class EightyMillionTinyImages extends StreamImageDataset {
             input.close();
             input = null;
         }
+    }
+
+    @Override
+    public int getImageWidth() {
+        return IMAGE_WIDTH;
+    }
+
+    @Override
+    public int getImageHeight() {
+        return IMAGE_HEIGHT;
     }
 
 }

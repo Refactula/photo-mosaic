@@ -1,7 +1,8 @@
 package com.refactula.photomosaic.dataset;
 
-import com.refactula.photomosaic.image.Image;
+import com.refactula.photomosaic.image.ArrayImage;
 
+import java.io.EOFException;
 import java.io.IOException;
 
 /**
@@ -13,14 +14,19 @@ public abstract class StreamImageDataset implements ImageDataset {
     private int currentIndex = -1;
 
     @Override
-    public Image get(int index) throws IOException {
+    public boolean load(int index, ArrayImage destination) throws IOException {
         if (currentIndex != index) {
             changePosition(index);
             currentIndex = index;
         }
 
         currentIndex++;
-        return next();
+        try {
+            readTo(destination);
+            return true;
+        } catch (EOFException e) {
+            return false;
+        }
     }
 
     /**
@@ -30,7 +36,8 @@ public abstract class StreamImageDataset implements ImageDataset {
 
     /**
      * Reads the next image from dataset.
+     * @param destination
      */
-    protected abstract Image next() throws IOException;
+    protected abstract void readTo(ArrayImage destination) throws IOException;
 
 }

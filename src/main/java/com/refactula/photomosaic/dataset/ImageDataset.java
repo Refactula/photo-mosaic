@@ -1,12 +1,16 @@
 package com.refactula.photomosaic.dataset;
 
-import com.refactula.photomosaic.image.Image;
+import com.refactula.photomosaic.image.ArrayImage;
 
 import java.io.Closeable;
 import java.io.IOException;
 
 public interface ImageDataset extends Closeable {
 
-    Image get(int index) throws IOException;
+    boolean load(int index, ArrayImage destination) throws IOException;
+
+    int getImageWidth();
+
+    int getImageHeight();
 
 }

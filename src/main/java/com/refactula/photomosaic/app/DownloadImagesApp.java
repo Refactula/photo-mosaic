@@ -10,18 +10,13 @@ import com.refactula.photomosaic.utils.TimeMeter;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class DevelopmentApp {
+public class DownloadImagesApp {
 
     public static final int DATASET_SIZE = 100000;
 
     public static void main(String[] args) throws Exception {
-        downloadImagesIntoFile();
-    }
-
-    private static void downloadImagesIntoFile() throws IOException {
         TimeMeter timeMeter = TimeMeter.start();
         ProgressEstimator progressEstimator = new ProgressEstimator(timeMeter);
         PeriodicEvent periodicLog = new PeriodicEvent(3, TimeUnit.SECONDS);
@@ -31,10 +26,13 @@ public class DevelopmentApp {
                 ImageDataset dataset = new EightyMillionTinyImages();
                 DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("dataset.bin")))
         ) {
-            ArrayImage buffer = new ArrayImage(dataset.getImageWidth(), dataset.getImageHeight());
+            ArrayImage sourceBuffer = new ArrayImage(dataset.getImageWidth(), dataset.getImageHeight());
+            ArrayImage resultBuffer = new ArrayImage(sourceBuffer.getWidth() / 2, sourceBuffer.getHeight() / 2);
+
             for (int i = 0; i < DATASET_SIZE; i++) {
-                dataset.load(i, buffer);
-                buffer.writeTo(output);
+                dataset.load(i, sourceBuffer);
+                sourceBuffer.scaleHalfSize(resultBuffer);
+                resultBuffer.writeTo(output);
 
                 if (periodicLog.update()) {
                     long remainingEstimation = progressEstimator.estimateRemainingTime(i / (double) DATASET_SIZE);
@@ -46,7 +44,6 @@ public class DevelopmentApp {
         }
 
         timeMeter.stop();
-
         System.out.println("Time spend: " + timeMeter.get());
     }
 
