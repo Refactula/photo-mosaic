@@ -1,5 +1,7 @@
 package com.refactula.photomosaic.image;
 
+import com.refactula.photomosaic.utils.DataUtils;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -22,8 +24,7 @@ public class ArrayImage extends AbstractImage {
 
     @Override
     public int get(ColorChannel channel, int x, int y) {
-        byte byteValue = data[channel.ordinal() * multiplierColorChannel + x * multiplierX + y * multiplierY];
-        return byteValue >= 0 ? byteValue : 256 + byteValue;
+        return DataUtils.unsignedByte(data[channel.ordinal() * multiplierColorChannel + x * multiplierX + y * multiplierY]);
     }
 
     @Override
