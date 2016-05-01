@@ -22,6 +22,8 @@ public interface ImageDataset extends Closeable {
         return load(index, buffer) ? buffer : null;
     }
 
+    int size();
+
     int getImageWidth();
 
     int getImageHeight();

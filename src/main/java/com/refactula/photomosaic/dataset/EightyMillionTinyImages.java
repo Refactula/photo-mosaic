@@ -6,7 +6,6 @@ import com.refactula.photomosaic.utils.IOUtils;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
-import java.io.EOFException;
 import java.io.IOException;
 
 public class EightyMillionTinyImages extends StreamImageDataset {
@@ -21,6 +20,10 @@ public class EightyMillionTinyImages extends StreamImageDataset {
     private static final int IMAGE_SIZE_BYTES = ColorChannel.values().length * IMAGE_WIDTH * IMAGE_HEIGHT;
 
     private DataInputStream input = null;
+
+    public EightyMillionTinyImages() {
+        super(SIZE, IMAGE_WIDTH, IMAGE_HEIGHT);
+    }
 
     @Override
     protected void changePosition(int index) throws IOException {

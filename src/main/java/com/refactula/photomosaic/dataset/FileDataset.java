@@ -10,24 +10,21 @@ import java.io.RandomAccessFile;
 
 public class FileDataset extends StreamImageDataset {
 
-    private final int imageWidth;
-    private final int imageHeight;
     private final int imageSizeBytes;
     private final RandomAccessFile file;
 
-    public FileDataset(RandomAccessFile file, int imageWidth, int imageHeight) {
+    public FileDataset(RandomAccessFile file, int size,  int imageWidth, int imageHeight) {
+        super(size, imageWidth, imageHeight);
         this.file = file;
-        this.imageWidth = imageWidth;
-        this.imageHeight = imageHeight;
         this.imageSizeBytes = ColorChannel.values().length * imageWidth * imageHeight;
     }
 
-    public static FileDataset forFile(String fileName, int imageWidth, int imageHeight) throws FileNotFoundException {
-        return forFile(new File(fileName), imageWidth, imageHeight);
+    public static FileDataset forFile(String fileName, int size, int imageWidth, int imageHeight) throws FileNotFoundException {
+        return forFile(new File(fileName), size, imageWidth, imageHeight);
     }
 
-    public static FileDataset forFile(File file, int imageWidth, int imageHeight) throws FileNotFoundException {
-        return new FileDataset(new RandomAccessFile(file, "r"), imageWidth, imageHeight);
+    public static FileDataset forFile(File file, int size, int imageWidth, int imageHeight) throws FileNotFoundException {
+        return new FileDataset(new RandomAccessFile(file, "r"), size, imageWidth, imageHeight);
     }
 
     @Override
@@ -38,16 +35,6 @@ public class FileDataset extends StreamImageDataset {
     @Override
     protected void readTo(ArrayImage destination) throws IOException {
         destination.readFrom(file);
-    }
-
-    @Override
-    public int getImageWidth() {
-        return imageWidth;
-    }
-
-    @Override
-    public int getImageHeight() {
-        return imageHeight;
     }
 
     @Override

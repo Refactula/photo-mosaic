@@ -9,9 +9,13 @@ import java.io.IOException;
  * Abstract ImageDataset for such datasets that by nature access images sequentially
  * and require extra time for random access.
  */
-public abstract class StreamImageDataset implements ImageDataset {
+public abstract class StreamImageDataset extends AbstractImageDataset {
 
     private int currentIndex = -1;
+
+    public StreamImageDataset(int size, int imageWidth, int imageHeight) {
+        super(size, imageWidth, imageHeight);
+    }
 
     @Override
     public boolean load(int index, ArrayImage destination) throws IOException {

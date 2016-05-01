@@ -13,19 +13,17 @@ import java.io.FileOutputStream;
 
 public class DevelopmentApp {
 
-    public static final int DATASET_SIZE = 100000;
-
     public static void main(String[] args) throws Exception {
         ImageDataset dataset;
-        try (ImageDataset fileDataset = FileDataset.forFile("dataset.bin", 16, 16)) {
-            dataset = InMemoryDataset.copyOf(fileDataset, DATASET_SIZE);
+        try (ImageDataset fileDataset = FileDataset.forFile("dataset.bin", 100000, 16, 16)) {
+            dataset = InMemoryDataset.copyOf(fileDataset);
         }
 
         try (DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("index.bin")))) {
             ArrayImage buffer = dataset.createImageBuffer();
             AverageColor averageColor = new AverageColor();
 
-            for (int i = 0; i < DATASET_SIZE; i++) {
+            for (int i = 0; i < dataset.size(); i++) {
                 if (!dataset.load(i, buffer)) {
                     throw new RuntimeException("Dataset size is invalid");
                 }
