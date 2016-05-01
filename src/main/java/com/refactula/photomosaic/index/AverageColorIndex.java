@@ -13,6 +13,10 @@ public class AverageColorIndex {
         this.data = data;
     }
 
+    public static AverageColorIndex readFromFile(String fileName, int size) throws IOException {
+        return readFromFile(new File(fileName), size);
+    }
+
     public static AverageColorIndex readFromFile(File file, int size) throws IOException {
         byte[] data = new byte[ColorChannel.values().length * size];
         try (DataInputStream input = new DataInputStream(new BufferedInputStream(new FileInputStream(file)))) {
