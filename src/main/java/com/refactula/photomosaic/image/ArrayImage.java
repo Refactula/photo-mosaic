@@ -63,4 +63,5 @@ public class ArrayImage extends AbstractImage {
     public void writeTo(DataOutput output) throws IOException {
         output.write(data);
     }
+
 }

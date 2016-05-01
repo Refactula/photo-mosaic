@@ -53,16 +53,4 @@ public class AbstractImage implements Image {
         setRGB(x, y, rgb);
     }
 
-    public void copyPixels(Image source) {
-        if (getWidth() != source.getWidth() || getHeight() != source.getHeight()) {
-            throw new IllegalArgumentException("Images must have same size");
-        }
-
-        for (int x = 0; x < getWidth(); x++) {
-            for (int y = 0; y < getHeight(); y++) {
-                setRGB(x, y, source.getRGB(x, y));
-            }
-        }
-    }
-
 }

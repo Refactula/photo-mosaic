@@ -1,15 +1,16 @@
 package com.refactula.photomosaic.image;
 
+import com.refactula.photomosaic.utils.IOUtils;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class AwtImage extends AbstractImage {
-
-    private static final ClassLoader CLASS_LOADER = AwtImage.class.getClassLoader();
 
     private final BufferedImage bufferedImage;
 
@@ -24,7 +25,9 @@ public class AwtImage extends AbstractImage {
     }
 
     public static AwtImage readFromResource(String resourceName) throws IOException {
-        return new AwtImage(ImageIO.read(CLASS_LOADER.getResourceAsStream(resourceName)));
+        try (InputStream input = IOUtils.connectResource(resourceName)) {
+            return new AwtImage(ImageIO.read(input));
+        }
     }
 
     @Override

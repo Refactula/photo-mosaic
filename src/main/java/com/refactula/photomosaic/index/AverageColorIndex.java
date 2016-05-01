@@ -8,9 +8,11 @@ import java.io.*;
 public class AverageColorIndex {
 
     private final byte[] data;
+    private final int size;
 
-    public AverageColorIndex(byte[] data) {
+    public AverageColorIndex(byte[] data, int size) {
         this.data = data;
+        this.size = size;
     }
 
     public static AverageColorIndex readFromFile(String fileName, int size) throws IOException {
@@ -22,11 +24,14 @@ public class AverageColorIndex {
         try (DataInputStream input = new DataInputStream(new BufferedInputStream(new FileInputStream(file)))) {
             input.readFully(data);
         }
-        return new AverageColorIndex(data);
+        return new AverageColorIndex(data, size);
     }
 
     public int get(int index, ColorChannel channel) {
         return DataUtils.unsignedByte(data[index * ColorChannel.values().length + channel.ordinal()]);
     }
 
+    public int size() {
+        return size;
+    }
 }
