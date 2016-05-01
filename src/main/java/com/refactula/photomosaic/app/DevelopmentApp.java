@@ -1,53 +1,36 @@
 package com.refactula.photomosaic.app;
 
-import com.refactula.photomosaic.dataset.EightyMillionTinyImages;
+import com.refactula.photomosaic.dataset.FileDataset;
 import com.refactula.photomosaic.dataset.ImageDataset;
 import com.refactula.photomosaic.image.ArrayImage;
-import com.refactula.photomosaic.utils.PeriodicEvent;
-import com.refactula.photomosaic.utils.ProgressEstimator;
-import com.refactula.photomosaic.utils.TimeMeter;
+import com.refactula.photomosaic.image.AverageColor;
+import com.refactula.photomosaic.image.ColorChannel;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 public class DevelopmentApp {
 
     public static final int DATASET_SIZE = 100000;
 
     public static void main(String[] args) throws Exception {
-        downloadImagesIntoFile();
-    }
-
-    private static void downloadImagesIntoFile() throws IOException {
-        TimeMeter timeMeter = TimeMeter.start();
-        ProgressEstimator progressEstimator = new ProgressEstimator(timeMeter);
-        PeriodicEvent periodicLog = new PeriodicEvent(3, TimeUnit.SECONDS);
-        periodicLog.update();
-
         try (
-                ImageDataset dataset = new EightyMillionTinyImages();
-                DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("dataset.bin")))
+                ImageDataset dataset = FileDataset.forFile("dataset.bin", 16, 16);
+                DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("index.bin")))
         ) {
-            ArrayImage buffer = new ArrayImage(dataset.getImageWidth(), dataset.getImageHeight());
+            ArrayImage buffer = dataset.createImageBuffer();
+            AverageColor averageColor = new AverageColor();
             for (int i = 0; i < DATASET_SIZE; i++) {
-                dataset.load(i, buffer);
-                buffer.writeTo(output);
-
-                if (periodicLog.update()) {
-                    long remainingEstimation = progressEstimator.estimateRemainingTime(i / (double) DATASET_SIZE);
-                    System.out.println("Time spend: " + TimeUnit.MILLISECONDS.toSeconds(timeMeter.get()) + "s"
-                            + ", remaining time: " + TimeUnit.MILLISECONDS.toSeconds(remainingEstimation) + "s"
-                    );
+                if (!dataset.load(i, buffer)) {
+                    throw new RuntimeException("Dataset size is invalid");
+                }
+                averageColor.compute(buffer);
+                for (ColorChannel channel : ColorChannel.values()) {
+                    output.writeByte(averageColor.get(channel));
                 }
             }
         }
-
-        timeMeter.stop();
-
-        System.out.println("Time spend: " + timeMeter.get());
     }
 
 }

@@ -22,6 +22,10 @@ public class FileDataset extends StreamImageDataset {
         this.imageSizeBytes = ColorChannel.values().length * imageWidth * imageHeight;
     }
 
+    public static FileDataset forFile(String fileName, int imageWidth, int imageHeight) throws FileNotFoundException {
+        return forFile(new File(fileName), imageWidth, imageHeight);
+    }
+
     public static FileDataset forFile(File file, int imageWidth, int imageHeight) throws FileNotFoundException {
         return new FileDataset(new RandomAccessFile(file, "r"), imageWidth, imageHeight);
     }

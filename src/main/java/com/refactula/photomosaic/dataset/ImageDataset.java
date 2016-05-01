@@ -13,4 +13,7 @@ public interface ImageDataset extends Closeable {
 
     int getImageHeight();
 
+    default ArrayImage createImageBuffer() {
+        return new ArrayImage(getImageWidth(), getImageHeight());
+    }
 }
