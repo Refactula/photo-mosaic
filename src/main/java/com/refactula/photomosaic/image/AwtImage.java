@@ -38,7 +38,11 @@ public class AwtImage extends AbstractImage {
     }
 
     public void display() {
-        JOptionPane.showMessageDialog(null, new JLabel(new ImageIcon(bufferedImage)), "Image", JOptionPane.PLAIN_MESSAGE, null);
+        display("Image");
+    }
+
+    public void display(String title) {
+        JOptionPane.showMessageDialog(null, new JLabel(new ImageIcon(bufferedImage)), title, JOptionPane.PLAIN_MESSAGE, null);
     }
 
     public AwtImage scale(double scale) {

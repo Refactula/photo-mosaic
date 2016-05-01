@@ -50,7 +50,7 @@ public class AbstractImage implements Image {
         for (ColorChannel channel : ColorChannel.values()) {
             rgb |= (channel == colorChannel) ? value : get(channel, x, y);
         }
-        setRGB(x, y, value);
+        setRGB(x, y, rgb);
     }
 
     public void copyPixels(Image source) {

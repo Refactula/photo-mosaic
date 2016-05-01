@@ -31,4 +31,5 @@ public class ArrayImage extends AbstractImage {
             }
         }
     }
+
 }

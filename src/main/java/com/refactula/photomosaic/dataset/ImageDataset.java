@@ -1,16 +1,12 @@
 package com.refactula.photomosaic.dataset;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
+import com.refactula.photomosaic.image.Image;
+
+import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
 
-public interface ImageDataset {
+public interface ImageDataset extends Closeable {
 
-    InputStream openInputStream(int fromIndex) throws IOException;
-
-    default DataInputStream openDataInputStream(int fromIndex) throws IOException {
-        return new DataInputStream(new BufferedInputStream(openInputStream(fromIndex)));
-    }
+    Image get(int index) throws IOException;
 
 }
