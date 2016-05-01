@@ -1,4 +1,4 @@
-package com.refactula.photomosaic.utils;
+package com.refactula.photomosaic.utils.time;
 
 /**
  * This class uses spend time and task progress to estimate in real time remaining time

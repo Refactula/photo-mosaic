@@ -2,26 +2,33 @@ package com.refactula.photomosaic.image;
 
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class ArrayImage extends AbstractImage {
 
-    private final int[][][] data;
+    private final byte[] data;
+    private final int multiplierColorChannel;
+    private final int multiplierX;
+    private final int multiplierY;
 
     public ArrayImage(int width, int height) {
         super(width, height);
-        data = new int[ColorChannel.values().length][width][height];
+        this.data = new byte[ColorChannel.values().length * width * height];
+
+        this.multiplierY = 1;
+        this.multiplierX = height * multiplierY;
+        this.multiplierColorChannel = width * multiplierX;
     }
 
     @Override
-    public int get(ColorChannel colorChannel, int x, int y) {
-        return data[colorChannel.ordinal()][x][y];
+    public int get(ColorChannel channel, int x, int y) {
+        byte byteValue = data[channel.ordinal() * multiplierColorChannel + x * multiplierX + y * multiplierY];
+        return byteValue >= 0 ? byteValue : 256 + byteValue;
     }
 
     @Override
-    public void set(ColorChannel colorChannel, int x, int y, int value) {
-        data[colorChannel.ordinal()][x][y] = value;
+    public void set(ColorChannel channel, int x, int y, int value) {
+        data[channel.ordinal() * multiplierColorChannel + x * multiplierX + y * multiplierY] = (byte) value;
     }
 
     public static ArrayImage createHalfSizeScale(ArrayImage image) {
@@ -49,22 +56,10 @@ public class ArrayImage extends AbstractImage {
     }
 
     public void readFrom(DataInput input) throws IOException {
-        for (int colorChannel = 0; colorChannel < data.length; colorChannel++) {
-            for (int x = 0; x < data[colorChannel].length; x++) {
-                for (int y = 0; y < data[colorChannel][x].length; y++) {
-                    data[colorChannel][x][y] = input.readUnsignedByte();
-                }
-            }
-        }
+        input.readFully(data);
     }
 
     public void writeTo(DataOutput output) throws IOException {
-        for (int colorChannel = 0; colorChannel < data.length; colorChannel++) {
-            for (int x = 0; x < data[colorChannel].length; x++) {
-                for (int y = 0; y < data[colorChannel][x].length; y++) {
-                    output.writeByte(data[colorChannel][x][y]);
-                }
-            }
-        }
+        output.write(data);
     }
 }

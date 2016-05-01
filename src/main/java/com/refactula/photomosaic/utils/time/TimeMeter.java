@@ -1,4 +1,4 @@
-package com.refactula.photomosaic.utils;
+package com.refactula.photomosaic.utils.time;
 
 public class TimeMeter {
 

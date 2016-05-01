@@ -3,9 +3,9 @@ package com.refactula.photomosaic.app;
 import com.refactula.photomosaic.dataset.EightyMillionTinyImages;
 import com.refactula.photomosaic.dataset.ImageDataset;
 import com.refactula.photomosaic.image.ArrayImage;
-import com.refactula.photomosaic.utils.PeriodicEvent;
-import com.refactula.photomosaic.utils.ProgressEstimator;
-import com.refactula.photomosaic.utils.TimeMeter;
+import com.refactula.photomosaic.utils.time.PeriodicEvent;
+import com.refactula.photomosaic.utils.time.ProgressEstimator;
+import com.refactula.photomosaic.utils.time.TimeMeter;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
