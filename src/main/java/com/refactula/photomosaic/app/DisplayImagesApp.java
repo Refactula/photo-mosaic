@@ -8,16 +8,19 @@ import com.refactula.photomosaic.image.AwtImage;
 import java.io.File;
 import java.util.Random;
 
+import static com.refactula.photomosaic.app.Settings.*;
+
 public class DisplayImagesApp {
 
     public static void main(String[] args) throws Exception {
-        try (ImageDataset dataset = FileDataset.forFile(new File("dataset.bin"), 100000, 16, 16)) {
+        try (ImageDataset dataset = FileDataset.forFile(new File("dataset.bin"), TILES_COUNT, TILE_WIDTH, TILE_HEIGHT)) {
             ArrayImage buffer = new ArrayImage(dataset.getImageWidth(), dataset.getImageHeight());
             AwtImage awtImage = new AwtImage(buffer.getWidth(), buffer.getHeight());
             Random random = new Random();
-            while (dataset.load(random.nextInt(dataset.size()), buffer)) {
+            int index;
+            while (dataset.load(index = random.nextInt(dataset.size()), buffer)) {
                 awtImage.copyPixels(buffer);
-                awtImage.scale(8).display("8 times bigger");
+                awtImage.scale(8).display("8 times bigger - " + index);
             }
         }
     }

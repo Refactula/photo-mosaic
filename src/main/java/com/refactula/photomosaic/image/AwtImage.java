@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -58,4 +59,7 @@ public class AwtImage extends AbstractImage {
         return new AwtImage(scaleOp.filter(bufferedImage, after));
     }
 
+    public void save(String format, File file) throws IOException {
+        ImageIO.write(bufferedImage, format, file);
+    }
 }

@@ -57,6 +57,32 @@ public interface Image {
         return distance;
     }
 
+    default void scaleHalfSize(ArrayImage halfSizeImage) {
+        if (halfSizeImage.getWidth() * 2 != getWidth() || halfSizeImage.getHeight() * 2 != getHeight()) {
+            throw new IllegalArgumentException();
+        }
+
+        for (int x = 0; x < halfSizeImage.getWidth(); x++) {
+            for (int y = 0; y < halfSizeImage.getHeight(); y++) {
+                for (ColorChannel channel : ColorChannel.values()) {
+                    int sum = get(channel, 2 * x + 0, 2 * y + 0)
+                            + get(channel, 2 * x + 0, 2 * y + 1)
+                            + get(channel, 2 * x + 1, 2 * y + 0)
+                            + get(channel, 2 * x + 1, 2 * y + 1);
+                    halfSizeImage.set(channel, x, y, sum / 4);
+                }
+            }
+        }
+    }
+
+    default void fill(int rgb) {
+        for (int x = 0; x < getWidth(); x++) {
+            for (int y = 0; y < getHeight(); y++) {
+                setRGB(x, y, rgb);
+            }
+        }
+    }
+
     interface Builder<T extends Image> {
         T build(int width, int height);
     }

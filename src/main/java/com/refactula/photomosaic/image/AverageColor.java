@@ -32,4 +32,7 @@ public class AverageColor {
         return (int) (sums[channel.ordinal()] / count[channel.ordinal()]);
     }
 
+    public int getRGB() {
+        return ColorChannel.toRGB(get(ColorChannel.RED), get(ColorChannel.GREEN), get(ColorChannel.BLUE));
+    }
 }

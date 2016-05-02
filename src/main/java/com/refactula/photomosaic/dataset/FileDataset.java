@@ -29,7 +29,7 @@ public class FileDataset extends StreamImageDataset {
 
     @Override
     protected void changePosition(int index) throws IOException {
-        file.seek(index * imageSizeBytes);
+        file.seek(index * (long) imageSizeBytes);
     }
 
     @Override

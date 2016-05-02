@@ -12,9 +12,9 @@ import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.util.concurrent.TimeUnit;
 
-public class DownloadImagesApp {
+import static com.refactula.photomosaic.app.Settings.*;
 
-    public static final int DATASET_SIZE = 100000;
+public class DownloadImagesApp {
 
     public static void main(String[] args) throws Exception {
         TimeMeter timeMeter = TimeMeter.start();
@@ -24,18 +24,23 @@ public class DownloadImagesApp {
 
         try (
                 ImageDataset dataset = new EightyMillionTinyImages();
-                DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("dataset.bin")))
+                DataOutputStream tilesDataset = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("dataset.bin")));
+                DataOutputStream tinyDataset = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("dataset-small.bin")))
         ) {
             ArrayImage sourceBuffer = new ArrayImage(dataset.getImageWidth(), dataset.getImageHeight());
-            ArrayImage resultBuffer = new ArrayImage(sourceBuffer.getWidth() / 2, sourceBuffer.getHeight() / 2);
+            ArrayImage tile = new ArrayImage(TILE_WIDTH, TILE_HEIGHT);
+            ArrayImage tinyTile = new ArrayImage(TINY_TILE_WIDTH, TINY_TILE_HEIGHT);
 
-            for (int i = 0; i < DATASET_SIZE; i++) {
+            for (int i = 0; i < TILES_COUNT; i++) {
                 dataset.load(i, sourceBuffer);
-                sourceBuffer.scaleHalfSize(resultBuffer);
-                resultBuffer.writeTo(output);
+                sourceBuffer.scaleHalfSize(tile);
+                tile.scaleHalfSize(tinyTile);
+
+                tile.writeTo(tilesDataset);
+                tinyTile.writeTo(tinyDataset);
 
                 if (periodicLog.update()) {
-                    long remainingEstimation = progressEstimator.estimateRemainingTime(i / (double) DATASET_SIZE);
+                    long remainingEstimation = progressEstimator.estimateRemainingTime(i / (double) TILES_COUNT);
                     System.out.println("Time spend: " + TimeUnit.MILLISECONDS.toSeconds(timeMeter.get()) + "s"
                             + ", remaining time: " + TimeUnit.MILLISECONDS.toSeconds(remainingEstimation) + "s"
                     );

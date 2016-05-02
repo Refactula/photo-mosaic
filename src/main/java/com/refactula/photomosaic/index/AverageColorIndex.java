@@ -9,10 +9,8 @@ public class AverageColorIndex {
     private final ResizeableIntArray[][][] tiles = new ResizeableIntArray[256][256][256];
     private final LookupIndex lookupIndex;
     private final ArrayList<Integer> candidates = new ArrayList<>();
-    private final int maxCandidates;
 
-    public AverageColorIndex(int maxSearchDistance, int maxCandidates) {
-        this.maxCandidates = maxCandidates;
+    public AverageColorIndex(int maxSearchDistance) {
         this.lookupIndex = new LookupIndex(maxSearchDistance);
     }
 
@@ -36,7 +34,7 @@ public class AverageColorIndex {
         }
     }
 
-    public List<Integer> search(int r, int g, int b) {
+    public List<Integer> search(int r, int g, int b, int maxCandidates) {
         candidates.clear();
         for (int i = 0; i < lookupIndex.size(); i++) {
             int rr = r + lookupIndex.getRed(i);

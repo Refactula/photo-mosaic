@@ -32,28 +32,10 @@ public class ArrayImage extends AbstractImage {
         data[channel.ordinal() * multiplierColorChannel + x * multiplierX + y * multiplierY] = (byte) value;
     }
 
-    public static ArrayImage createHalfSizeScale(ArrayImage image) {
+    public static ArrayImage createHalfSizeScale(Image image) {
         ArrayImage result = new ArrayImage(image.getWidth() / 2, image.getHeight() / 2);
         image.scaleHalfSize(result);
         return result;
-    }
-
-    public void scaleHalfSize(ArrayImage halfSizeImage) {
-        if (halfSizeImage.getWidth() * 2 != getWidth() || halfSizeImage.getHeight() * 2 != getHeight()) {
-            throw new IllegalArgumentException();
-        }
-
-        for (int x = 0; x < halfSizeImage.getWidth(); x++) {
-            for (int y = 0; y < halfSizeImage.getHeight(); y++) {
-                for (ColorChannel channel : ColorChannel.values()) {
-                    int sum = get(channel, 2 * x + 0, 2 * y + 0)
-                            + get(channel, 2 * x + 0, 2 * y + 1)
-                            + get(channel, 2 * x + 1, 2 * y + 0)
-                            + get(channel, 2 * x + 1, 2 * y + 1);
-                    halfSizeImage.set(channel, x, y, sum / 4);
-                }
-            }
-        }
     }
 
     public void readFrom(DataInput input) throws IOException {
